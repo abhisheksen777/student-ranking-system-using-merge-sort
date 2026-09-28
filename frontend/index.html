@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Sorting & Ranking System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>🎓 Student Marks Sorting & Ranking</h1>
+            <span class="subtitle">Using Merge Sort — Divide and Conquer</span>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="showSection('dashboard')">Dashboard</button>
+            <button class="nav-btn" onclick="showSection('students')">Students</button>
+            <button class="nav-btn" onclick="showSection('ranking')">Ranking</button>
+            <button class="nav-btn" onclick="showSection('visualization')">Visualization</button>
+            <button class="nav-btn" onclick="showSection('performance')">Performance</button>
+            <button class="nav-btn" onclick="showSection('algorithm')">Algorithm</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- ==================== DASHBOARD ==================== -->
+        <section id="dashboard" class="section active">
+            <h2 class="section-title">Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3 id="dash-total">0</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-info">
+                        <h3 id="dash-highest">0</h3>
+                        <p>Highest Marks</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <h3 id="dash-average">0</h3>
+                        <p>Average Marks</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-info">
+                        <h3 id="dash-lowest">0</h3>
+                        <p>Lowest Marks</p>
+                    </div>
+                </div>
+            </div>
+            <div class="dash-buttons">
+                <button class="btn btn-primary" onclick="showSection('students')">Add Student</button>
+                <button class="btn btn-success" onclick="generateRanking()">View Ranking</button>
+                <button class="btn btn-info" onclick="showSection('visualization')">Visualize Merge Sort</button>
+                <button class="btn btn-warning" onclick="showSection('performance')">Performance Analysis</button>
+            </div>
+        </section>
+
+        <!-- ==================== STUDENTS ==================== -->
+        <section id="students" class="section">
+            <h2 class="section-title">Student Records</h2>
+            <div class="students-layout">
+                <div class="card">
+                    <h3>Add / Edit Student</h3>
+                    <form id="student-form" onsubmit="saveStudent(event)">
+                        <input type="hidden" id="edit-index" value="-1">
+                        <div class="form-group">
+                            <label>Roll Number</label>
+                            <input type="number" id="student-roll" placeholder="Enter roll number" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Student Name</label>
+                            <input type="text" id="student-name" placeholder="Enter student name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Marks (0-100)</label>
+                            <input type="number" id="student-marks" placeholder="Enter marks (0-100)" min="0" max="100" required>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-primary" id="submit-btn">Add Student</button>
+                            <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Student List</h3>
+                    <div class="student-actions">
+                        <button class="btn btn-sm" onclick="loadSample()">Load Sample Data</button>
+                        <button class="btn btn-sm btn-danger" onclick="clearAllStudents()">Clear All</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="student-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll No.</th>
+                                    <th>Student</th>
+                                    <th>Marks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-tbody">
+                                <tr><td colspan="4" class="empty-message">No students found</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== RANKING ==================== -->
+        <section id="ranking" class="section">
+            <h2 class="section-title">Student Ranking</h2>
+            <div class="ranking-controls">
+                <button class="btn btn-primary" onclick="generateRanking()">🔄 Sort & Generate Ranking</button>
+                <div class="filter-group">
+                    <input type="text" id="search-student" placeholder="Search student..." oninput="filterRanking()">
+                    <input type="number" id="filter-marks" placeholder="Filter by marks" min="0" max="100" oninput="filterRanking()">
+                </div>
+            </div>
+            <div id="ranking-stats" class="ranking-stats"></div>
+            <div class="table-container">
+                <table id="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Roll No.</th>
+                            <th>Student</th>
+                            <th>Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-tbody">
+                        <tr><td colspan="4" class="empty-message">Click "Sort & Generate Ranking" to see results</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ==================== VISUALIZATION ==================== -->
+        <section id="visualization" class="section">
+            <h2 class="section-title">Merge Sort Visualization</h2>
+            <div class="viz-layout">
+                <div class="card">
+                    <h3>Step-by-Step Visualization</h3>
+                    <div class="viz-controls">
+                        <button class="btn btn-sm" onclick="vizPrev()" id="viz-prev">⏮ Prev</button>
+                        <button class="btn btn-sm" onclick="vizPlay()" id="viz-play">▶ Play</button>
+                        <button class="btn btn-sm" onclick="vizPause()" id="viz-pause">⏸ Pause</button>
+                        <button class="btn btn-sm" onclick="vizNext()" id="viz-next">Next ⏭</button>
+                        <button class="btn btn-sm btn-danger" onclick="vizReset()">↺ Reset</button>
+                    </div>
+                    <div id="viz-message" class="viz-message">Enter marks and click "Start Visualization"</div>
+                    <div id="viz-array" class="viz-array"></div>
+                    <div class="viz-input">
+                        <input type="text" id="viz-input" placeholder="Enter marks separated by comma (e.g., 96,72,91,85)">
+                        <button class="btn btn-primary btn-sm" onclick="startViz()">Start</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Algorithm Flow</h3>
+                    <div id="viz-steps" class="viz-steps">
+                        <p class="placeholder-text">Steps will appear here as you navigate through the visualization.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PERFORMANCE ==================== -->
+        <section id="performance" class="section">
+            <h2 class="section-title">Performance Analysis</h2>
+            <div class="performance-layout">
+                <div class="card">
+                    <h3>Theoretical Complexity</h3>
+                    <table class="complexity-table">
+                        <thead>
+                            <tr><th>Algorithm</th><th>Best Case</th><th>Average Case</th><th>Worst Case</th><th>Space</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Bubble Sort</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+                            <tr><td>Selection Sort</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+                            <tr><td>Insertion Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+                            <tr class="highlight-row"><td><strong>Merge Sort</strong></td><td><strong>O(n log n)</strong></td><td><strong>O(n log n)</strong></td><td><strong>O(n log n)</strong></td><td><strong>O(n)</strong></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <h3>Actual Performance Testing</h3>
+                    <div class="perf-controls">
+                        <button class="btn btn-primary btn-sm" onclick="runPerformance([100])">Test 100</button>
+                        <button class="btn btn-primary btn-sm" onclick="runPerformance([500])">Test 500</button>
+                        <button class="btn btn-primary btn-sm" onclick="runPerformance([1000])">Test 1000</button>
+                        <button class="btn btn-primary btn-sm" onclick="runPerformance([5000])">Test 5000</button>
+                        <button class="btn btn-primary btn-sm" onclick="runPerformance([10000])">Test 10000</button>
+                        <button class="btn btn-info btn-sm" onclick="runPerformance([100,500,1000,5000,10000])">Run All</button>
+                    </div>
+                    <div id="perf-results"></div>
+                </div>
+                <div class="card">
+                    <h3>Execution Time Chart</h3>
+                    <div id="perf-chart" class="perf-chart">
+                        <p class="placeholder-text">Run performance tests to see the chart</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ALGORITHM ==================== -->
+        <section id="algorithm" class="section">
+            <h2 class="section-title">Algorithm Explanation</h2>
+            <div class="algorithm-layout">
+                <div class="card">
+                    <h3>What is Merge Sort?</h3>
+                    <p>Merge Sort is a <strong>Divide and Conquer</strong> algorithm. It works by recursively dividing
+                    the problem into smaller subproblems, solving them, and then combining the results.</p>
+                    <h4>Three Stages:</h4>
+                    <div class="stage-card"><h5>1. DIVIDE</h5><p>Split the student records into two halves. Continue splitting until each sublist has one element.</p></div>
+                    <div class="stage-card"><h5>2. CONQUER</h5><p>Recursively sort each half. A single element is already sorted by definition.</p></div>
+                    <div class="stage-card"><h5>3. COMBINE</h5><p>Merge the sorted halves back together by comparing marks. Larger marks come first (descending).</p></div>
+                </div>
+                <div class="card">
+                    <h3>Pseudocode</h3>
+                    <pre><code>MERGE_SORT(A, low, high)
+
+IF low < high
+    mid = (low + high) / 2
+    MERGE_SORT(A, low, mid)
+    MERGE_SORT(A, mid + 1, high)
+    MERGE(A, low, mid, high)
+END IF
+
+MERGE(A, low, mid, high)
+    Create left = A[low..mid]
+    Create right = A[mid+1..high]
+    i = 0, j = 0, k = low
+    WHILE i < len(left) AND j < len(right)
+        IF left[i].marks >= right[j].marks
+            A[k] = left[i]
+            i = i + 1
+        ELSE
+            A[k] = right[j]
+            j = j + 1
+        k = k + 1
+    END WHILE
+    Copy remaining elements</code></pre>
+                </div>
+                <div class="card">
+                    <h3>Complexity Analysis</h3>
+                    <table class="complexity-table">
+                        <thead><tr><th>Case</th><th>Time Complexity</th></tr></thead>
+                        <tbody>
+                            <tr><td>Best Case</td><td>O(n log n)</td></tr>
+                            <tr><td>Average Case</td><td>O(n log n)</td></tr>
+                            <tr><td>Worst Case</td><td>O(n log n)</td></tr>
+                            <tr><td>Auxiliary Space</td><td>O(n)</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="explanation">There are O(log n) levels of recursion. Each level performs O(n) merge work. Therefore: O(n) × O(log n) = O(n log n).</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
